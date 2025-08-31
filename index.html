@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Day Is Now</title>
+
+  <!-- Favicon & Logo (pon tus archivos como favicon.png y logo.png en la misma carpeta) -->
+  <link rel="icon" href="favicon.png" type="image/png" />
+
+  <!-- Fuente premium -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1:#071120; /* navy más oscuro */
+      --bg-2:#0a1e33; /* navy profundo */
+      --accent-a:#00c9de; /* aqua del logo */
+      --accent-b:#3ce47a; /* mint */
+      --glass: rgba(255,255,255,.05);
+      --muted: #a9c6d8;
+      --card-stroke: rgba(255,255,255,.08);
+      --text: #e9f8ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: linear-gradient(135deg, var(--bg-1), #092139 46%, var(--bg-2));
+      color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Header */
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px; background:rgba(0,0,0,.28); backdrop-filter: blur(6px);
+      border-bottom:1px solid var(--card-stroke);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .brand img{
+      width:42px; height:42px; border-radius:50%; object-fit:cover;
+      box-shadow: 0 6px 22px rgba(0,0,0,.6);
+    }
+    .brand h1{ margin:0; font-size:1.1rem; letter-spacing:.4px; color:var(--accent-a); }
+    .brand small{ display:block; color:var(--muted); font-weight:400; }
+
+    .lang{
+      display:flex; align-items:center; gap:8px;
+    }
+    .select{
+      appearance:none; -webkit-appearance:none;
+      padding:8px 12px; border-radius:10px; border:1px solid var(--card-stroke);
+      background:linear-gradient(180deg,#fff,#e7f8ff); color:#082331; font-weight:600; cursor:pointer;
+    }
+
+    /* Layout */
+    .wrap{ max-width:980px; margin:18px auto; padding:18px; }
+
+    /* Cards & Screens */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid var(--card-stroke);
+      border-radius:16px; padding:22px;
+      box-shadow: 0 12px 36px rgba(2,12,20,.6), inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    .screen{ display:none; }
+    .screen.active{ display:block; animation:fadeIn .24s ease }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+    /* Login */
+    .login-grid{
+      display:grid; grid-template-columns: 1fr 1fr; gap:18px;
+    }
+    .login-left{ display:flex; flex-direction:column; gap:10px; justify-content:center }
+    .login-right{
+      background: radial-gradient(120px 120px at 20% 20%, rgba(0,201,222,.14), transparent 60%),
+                  radial-gradient(160px 160px at 80% 60%, rgba(60,228,122,.12), transparent 60%);
+      border:1px dashed var(--card-stroke); border-radius:14px; min-height:180px;
+      display:flex; align-items:center; justify-content:center; color:var(--muted);
+    }
+
+    .field{
+      width:100%; padding:12px 14px; border-radius:10px;
+      color:#06202a; border:1px solid rgba(0,0,0,.25);
+      background: linear-gradient(180deg,#ffffff,#e6f8ff); font-size:1rem;
+    }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+    .btn{
+      padding:11px 18px; border-radius:10px; border:none; font-weight:700; cursor:pointer;
+    }
+    .btn.primary{
+      background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); color:#042028;
+      box-shadow: 0 10px 30px rgba(0,210,255,.12);
+    }
+    .btn.ghost{ background:transparent; color:var(--text); border:1px solid var(--card-stroke); }
+
+    /* Menu */
+    .menu-grid{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-top:10px;
+    }
+    .tile{
+      text-align:left; padding:18px; border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--card-stroke); cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease; position:relative;
+    }
+    .tile:hover{ transform:translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+    .tile.disabled{ cursor:not-allowed; filter:saturate(.5); }
+    .tile-head{ font-weight:800; color:var(--text); font-size:1.02rem; margin-bottom:8px; }
+    .tile-body{ color:var(--muted); }
+    .countdown{ margin-top:8px; color:#ffdd87; font-weight:600; letter-spacing:.4px }
+
+    /* Quiz */
+    .muted{ color:var(--muted) }
+    .quiz-grid{ display:grid; gap:12px; margin-top:12px; grid-template-columns:1fr; }
+    .q{ background:linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,.01)); border-radius:12px; padding:14px;
+        border:1px solid var(--card-stroke); }
+    .q h4{ margin:0 0 10px; font-size:1rem; }
+    .opt-grid{ display:flex; gap:8px; flex-wrap:wrap; }
+    .opt{
+      padding:9px 11px; border-radius:9px; background:transparent; border:1px solid rgba(255,255,255,.06);
+      cursor:pointer; color:var(--muted); min-width:120px; text-align:center; transition:all .12s ease;
+      font-weight:600;
+    }
+    .opt.selected{
+      background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#06202a; border-color:transparent;
+      box-shadow: 0 8px 26px rgba(0,210,255,.08);
+    }
+    .actions{ display:flex; justify-content:space-between; margin-top:12px; }
+
+    /* Results */
+    .recs{ list-style:none; padding-left:0; }
+    .recs li{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      padding:10px 12px; margin:8px 0; border-radius:10px; border:1px solid var(--card-stroke); color:var(--muted);
+    }
+
+    /* Responsive */
+    @media (max-width:800px){ .login-grid{ grid-template-columns:1fr } }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="logo">
+      <div>
+        <h1 id="t.appName">New Day Is Now</h1>
+        <small id="t.tagline">Support for a better day</small>
+      </div>
+    </div>
+    <div class="lang">
+      <label for="langSel" class="muted" id="t.language">Language</label>
+      <select id="langSel" class="select">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Register / Login -->
+    <section id="screen-register" class="screen active">
+      <div class="card">
+        <div class="login-grid">
+          <div class="login-left">
+            <h2 id="t.welcome">Welcome</h2>
+            <p class="muted" id="t.enterDetails">Please enter your details to continue.</p>
+            <input id="inpName" class="field" type="text" placeholder="Full name" />
+            <input id="inpEmail" class="field" type="email" placeholder="Email" />
+            <div class="row">
+              <input id="inpAge" class="field" type="number" placeholder="Age (optional)" min="6" max="120"/>
+              <select id="inpGender" class="field">
+                <option value="" id="t.genderPlaceholder">Gender (optional)</option>
+                <option value="female" id="t.genderFemale">Female</option>
+                <option value="male" id="t.genderMale">Male</option>
+                <option value="nonbinary" id="t.genderNB">Non-binary</option>
+                <option value="prefer_no" id="t.genderNA">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnContinue">Continue</button>
+            </div>
+            <p class="muted" style="margin-top:8px" id="t.disclaimer">
+              This site provides supportive tips. It's not a substitute for professional help.
+            </p>
+          </div>
+          <div class="login-right">
+            <div>
+              <div style="font-weight:700; color:var(--accent-a);" id="t.rightTitle">Your day can get better.</div>
+              <div class="muted" id="t.rightText">Small steps add up. We’ll suggest practical actions.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Home / Menu -->
+    <section id="screen-home" class="screen">
+      <div class="card">
+        <h2><span id="t.hello">Hello</span>, <span id="userPreview">friend</span></h2>
+        <p class="muted" id="t.choose">Choose one of the following:</p>
+        <div class="menu-grid">
+          <button class="tile" id="openQuiz">
+            <div class="tile-head" id="t.quizHead">Psychological Questionnaire</div>
+            <div class="tile-body" id="t.quizBody">Answer 10 short questions → get tailored suggestions.</div>
+          </button>
+          <button class="tile disabled" id="openChat" disabled>
+            <div class="tile-head" id="t.chatHead">Chat with Br Br Br Patapin</div>
+            <div class="tile-body" id="t.chatBody">Temporarily closed. Counting down to release.</div>
+            <div class="countdown" id="countdown"></div>
+          </button>
+        </div>
+        <div class="row" style="justify-content:flex-end; margin-top:16px">
+          <button class="btn ghost" id="logoutBtn">Log out</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="screen-quiz" class="screen">
+      <div class="card">
+        <h2 id="t.quizTitle">Questionnaire</h2>
+        <p class="muted" id="t.quizSubtitle">There are 10 short questions. Choose the option that fits best.</p>
+        <form id="quizForm" class="quiz-grid"></form>
+        <div class="actions">
+          <button class="btn ghost" id="quizBack">Back</button>
+          <button class="btn primary" id="quizSubmit">Get Suggestions</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="screen-results" class="screen">
+      <div class="card">
+        <h2 id="t.recsTitle">Recommendations</h2>
+        <ul id="recsList" class="recs"></ul>
+        <div class="actions">
+          <button class="btn ghost" id="resultsBack">Back to Menu</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap" style="opacity:.8">
+    <small id="t.footerNote">New Day Is Now — School project · Not a medical service</small>
+  </footer>
+
+  <script>
+    /* ---------------- Translations (EN/ES/ZH) ---------------- */
+    const I18N = {
+      en: {
+        appName:"New Day Is Now", tagline:"Support for a better day", language:"Language",
+        welcome:"Welcome", enterDetails:"Please enter your details to continue.",
+        genderPlaceholder:"Gender (optional)", genderFemale:"Female", genderMale:"Male", genderNB:"Non-binary", genderNA:"Prefer not to say",
+        continue:"Continue", disclaimer:"This site provides supportive tips. It's not a substitute for professional help.",
+        rightTitle:"Your day can get better.", rightText:"Small steps add up. We’ll suggest practical actions.",
+        hello:"Hello", choose:"Choose one of the following:",
+        quizHead:"Psychological Questionnaire", quizBody:"Answer 10 short questions → get tailored suggestions.",
+        chatHead:"Chat with Br Br Br Patapin", chatBody:"Temporarily closed. Counting down to release.",
+        quizTitle:"Questionnaire", quizSubtitle:"There are 10 short questions. Choose the option that fits best.",
+        recsTitle:"Recommendations", footerNote:"New Day Is Now — School project · Not a medical service",
+        back:"Back", getSuggestions:"Get Suggestions", logout:"Log out",
+        // Quiz content
+        Q: [
+          {q:"How have you been feeling overall lately?", o:["Very good","Mostly okay","Down or low","Very low"]},
+          {q:"Have you been sleeping well at night?", o:["Yes, well","Some nights OK","Not really","Very poorly"]},
+          {q:"Do you find it hard to concentrate on school or tasks?", o:["No","Sometimes","Often","Always"]},
+          {q:"Do you feel supported by family or friends when upset?", o:["Yes always","Sometimes","Rarely","Never"]},
+          {q:"Have you lost interest in activities you used to enjoy?", o:["Never","Sometimes","Often","Always"]},
+          {q:"Do you feel overwhelmed by stress frequently?", o:["No","Sometimes","Often","Always"]},
+          {q:"How often do you feel anxious or worried?", o:["Rarely","Sometimes","Often","Almost always"]},
+          {q:"Do you practice any coping activity (sports, journaling, music)?", o:["Daily","A few times a week","Rarely","Never"]},
+          {q:"Do you have someone you can talk openly with?", o:["Yes","Sometimes","Not really","No"]},
+          {q:"Do you believe things can improve in the near future?", o:["Yes","Maybe","Not sure","No"]}
+        ],
+        // Buttons text used in alerts
+        needAll:"Please answer all questions.",
+        // Countdown units
+        units:{y:"y", w:"w", d:"d", h:"h", m:"m", s:"s"},
+        // Recommendation strings
+        rec_mood:"If you feel low often, try a simple mood check: write 3 things that went well today and 1 small step for tomorrow.",
+        rec_sleep:"Improve sleep: set a fixed bedtime, avoid screens 30 minutes before, and try a calming routine.",
+        rec_focus:"Break tasks into small steps (try 25-min focus + 5-min break) and take a brief walk to reset.",
+        rec_support:"If support feels limited, draft a short message to a trusted adult/teacher or try journaling to organize thoughts.",
+        rec_interest:"Schedule one small enjoyable activity this week (15–30 min). Creative activities can lift mood.",
+        rec_anxiety:"Try the 5-4-3-2-1 grounding: 5 things you see, 4 touch, 3 hear, 2 smell, 1 taste.",
+        rec_hope:"List tiny goals for the next 7 days; momentum builds confidence.",
+        rec_coping:"Practice one coping skill daily (breathing, stretching, music, brief walk).",
+        rec_severity_high:"Your responses show significant distress. Consider speaking with a school counselor or mental health professional.",
+        rec_severity_med:"You’re experiencing some difficulties — try the suggestions and check in again in a week. Reach out if it persists.",
+        rec_severity_low:"You’re doing reasonably well — keep practicing self-care and stay connected with others.",
+        // Buttons
+        backToMenu:"Back to Menu"
+      },
+      es: {
+        appName:"New Day Is Now", tagline:"Apoyo para un mejor día", language:"Idioma",
+        welcome:"Bienvenido", enterDetails:"Ingresa tus datos para continuar.",
+        genderPlaceholder:"Género (opcional)", genderFemale:"Femenino", genderMale:"Masculino", genderNB:"No binario", genderNA:"Prefiero no decirlo",
+        continue:"Continuar", disclaimer:"Este sitio brinda consejos de apoyo. No sustituye la ayuda profesional.",
+        rightTitle:"Tu día puede mejorar.", rightText:"Los pasos pequeños suman. Te daremos acciones prácticas.",
+        hello:"Hola", choose:"Elige una opción:",
+        quizHead:"Cuestionario Psicológico", quizBody:"Responde 10 preguntas cortas → recibe sugerencias personalizadas.",
+        chatHead:"Chat con Br Br Br Patapin", chatBody:"Cerrado temporalmente. Contador para su apertura.",
+        quizTitle:"Cuestionario", quizSubtitle:"Son 10 preguntas cortas. Elige la opción que mejor encaje.",
+        recsTitle:"Recomendaciones", footerNote:"New Day Is Now — Proyecto escolar · No es un servicio médico",
+        back:"Atrás", getSuggestions:"Obtener recomendaciones", logout:"Cerrar sesión",
+        Q: [
+          {q:"¿Cómo te has sentido en general últimamente?", o:["Muy bien","Más o menos bien","Bajo de ánimo","Muy mal"]},
+          {q:"¿Has dormido bien por las noches?", o:["Sí, bien","Algunas noches bien","No mucho","Muy mal"]},
+          {q:"¿Te cuesta concentrarte en clases o tareas?", o:["No","A veces","A menudo","Siempre"]},
+          {q:"¿Te sientes apoyado por familia o amigos cuando estás mal?", o:["Sí, siempre","A veces","Rara vez","Nunca"]},
+          {q:"¿Has perdido interés en actividades que antes disfrutabas?", o:["Nunca","A veces","A menudo","Siempre"]},
+          {q:"¿Te sientes abrumado por el estrés con frecuencia?", o:["No","A veces","A menudo","Siempre"]},
+          {q:"¿Con qué frecuencia sientes ansiedad o preocupación?", o:["Rara vez","A veces","A menudo","Casi siempre"]},
+          {q:"¿Practicas alguna estrategia de afrontamiento (deporte, diario, música)?", o:["Diario","Varias veces por semana","Rara vez","Nunca"]},
+          {q:"¿Tienes a alguien con quien hablar abiertamente?", o:["Sí","A veces","No mucho","No"]},
+          {q:"¿Crees que las cosas pueden mejorar pronto?", o:["Sí","Tal vez","No estoy seguro","No"]}
+        ],
+        needAll:"Responde todas las preguntas, por favor.",
+        units:{y:"a", w:"s", d:"d", h:"h", m:"m", s:"s"},
+        rec_mood:"Si te sientes bajo de ánimo, escribe 3 cosas que salieron bien hoy y 1 paso pequeño para mañana.",
+        rec_sleep:"Mejora el sueño: hora fija, sin pantallas 30 minutos antes y una rutina calmante.",
+        rec_focus:"Divide tareas en pasos pequeños (25 min de enfoque + 5 min de pausa) y da una caminata breve.",
+        rec_support:"Si sientes poco apoyo, redacta un mensaje a un adulto/profesor de confianza o escribe en un diario.",
+        rec_interest:"Agenda una actividad agradable esta semana (15–30 min). Lo creativo ayuda al ánimo.",
+        rec_anxiety:"Prueba el anclaje 5-4-3-2-1: 5 cosas que ves, 4 tocas, 3 oyes, 2 hueles, 1 saboreas.",
+        rec_hope:"Escribe metas pequeñas para los próximos 7 días; el impulso genera confianza.",
+        rec_coping:"Practica a diario una habilidad de afrontamiento (respirar, estirar, música, breve paseo).",
+        rec_severity_high:"Tus respuestas muestran malestar significativo. Considera hablar con un orientador o profesional.",
+        rec_severity_med:"Estás pasando por dificultades — prueba las sugerencias y revisa en una semana. Busca ayuda si continúa.",
+        rec_severity_low:"Vas razonablemente bien — continua con el autocuidado y mantén tus vínculos.",
+        backToMenu:"Volver al menú"
+      },
+      zh: {
+        appName:"New Day Is Now", tagline:"让明天更好", language:"语言",
+        welcome:"欢迎", enterDetails:"请输入您的信息以继续。",
+        genderPlaceholder:"性别（可选）", genderFemale:"女性", genderMale:"男性", genderNB:"非二元", genderNA:"不便透露",
+        continue:"继续", disclaimer:"本网站仅提供支持性建议，不能替代专业帮助。",
+        rightTitle:"你的一天会更好。", rightText:"从小步骤开始，我们给出可执行的建议。",
+        hello:"你好", choose:"请选择：",
+        quizHead:"心理问卷", quizBody:"回答 10 个简短问题 → 获取个性化建议。",
+        chatHead:"与 Br Br Br Patapin 聊天", chatBody:"暂时关闭。正在倒计时开放。",
+        quizTitle:"问卷", quizSubtitle:"共有 10 个简短问题，请选择最合适的选项。",
+        recsTitle:"建议", footerNote:"New Day Is Now — 学校项目 · 非医疗服务",
+        back:"返回", getSuggestions:"获取建议", logout:"退出",
+        Q: [
+          {q:"最近整体感觉如何？", o:["非常好","大体还行","情绪低落","非常糟"]},
+          {q:"晚上睡眠情况如何？", o:["很好","有时好","不太好","很差"]},
+          {q:"是否难以专注于学习或任务？", o:["不会","有时","经常","总是"]},
+          {q:"难过时是否感到家人或朋友的支持？", o:["一直有","有时","很少","没有"]},
+          {q:"是否对曾经喜欢的活动失去兴趣？", o:["从不","有时","经常","总是"]},
+          {q:"是否经常被压力压垮？", o:["不会","有时","经常","总是"]},
+          {q:"多频繁感到焦虑或担心？", o:["很少","有时","经常","几乎总是"]},
+          {q:"是否进行应对活动（运动、写日记、音乐）？", o:["每天","每周几次","很少","从不"]},
+          {q:"是否有可以坦诚倾诉的人？", o:["有","有时","不太有","没有"]},
+          {q:"是否相信不久的将来会变好？", o:["是","也许","不确定","不会"]}
+        ],
+        needAll:"请回答所有问题。",
+        units:{y:"年", w:"周", d:"天", h:"时", m:"分", s:"秒"},
+        rec_mood:"若经常情绪低落，可记录今天 3 件顺利的事与明天 1 个小目标。",
+        rec_sleep:"改善睡眠：固定作息，睡前 30 分钟远离屏幕，建立放松流程。",
+        rec_focus:"把任务拆分成小步（25 分钟专注 + 5 分钟休息），并试着短暂散步。",
+        rec_support:"若缺少支持，尝试给信任的成人/老师写一段话，或用日记梳理想法。",
+        rec_interest:"本周安排一项小而愉快的活动（15–30 分钟）。创造性活动能提振心情。",
+        rec_anxiety:"试试 5-4-3-2-1 觉察法：5 看见、4 触摸、3 听到、2 闻到、1 尝到。",
+        rec_hope:"写下未来 7 天的小目标；积累会带来自信。",
+        rec_coping:"每天练习一种应对技巧（呼吸、拉伸、音乐、短走）。",
+        rec_severity_high:"你的回答显示显著困扰，建议咨询学校辅导员或心理专业人士。",
+        rec_severity_med:"你正面临一些困难——请尝试建议，并在一周后再评估；如持续请寻求帮助。",
+        rec_severity_low:"整体状况尚可——请继续自我照顾并保持联系。",
+        backToMenu:"返回菜单"
+      }
+    };
+
+    /* ---------------- State & Helpers ---------------- */
+    const screens = {
+      register: document.getElementById('screen-register'),
+      home: document.getElementById('screen-home'),
+      quiz: document.getElementById('screen-quiz'),
+      results: document.getElementById('screen-results')
+    };
+    function showScreen(name){
+      Object.values(screens).forEach(s=> s.classList.remove('active'));
+      screens[name].classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    let LANG = 'en';
+    const langSel = document.getElementById('langSel');
+    langSel.addEventListener('change', ()=> applyLang(langSel.value));
+
+    function applyLang(code){
+      LANG = code;
+      const t = I18N[LANG];
+      // static texts
+      document.getElementById('t.appName').textContent = t.appName;
+      document.getElementById('t.tagline').textContent = t.tagline;
+      document.getElementById('t.language').textContent = t.language;
+      document.getElementById('t.welcome').textContent = t.welcome;
+      document.getElementById('t.enterDetails').textContent = t.enterDetails;
+      document.getElementById('t.genderPlaceholder').textContent = t.genderPlaceholder;
+      document.getElementById('t.genderFemale').textContent = t.genderFemale;
+      document.getElementById('t.genderMale').textContent = t.genderMale;
+      document.getElementById('t.genderNB').textContent = t.genderNB;
+      document.getElementById('t.genderNA').textContent = t.genderNA;
+      document.getElementById('btnContinue').textContent = t.continue;
+      document.getElementById('t.disclaimer').textContent = t.disclaimer;
+      document.getElementById('t.rightTitle').textContent = t.rightTitle;
+      document.getElementById('t.rightText').textContent = t.rightText;
+
+      document.getElementById('t.hello').textContent = t.hello;
+      document.getElementById('t.choose').textContent = t.choose;
+      document.getElementById('t.quizHead').textContent = t.quizHead;
+      document.getElementById('t.quizBody').textContent = t.quizBody;
+      document.getElementById('t.chatHead').textContent = t.chatHead;
+      document.getElementById('t.chatBody').textContent = t.chatBody;
+
+      document.getElementById('t.quizTitle').textContent = t.quizTitle;
+      document.getElementById('t.quizSubtitle').textContent = t.quizSubtitle;
+      document.getElementById('quizBack').textContent = t.back;
+      document.getElementById('quizSubmit').textContent = t.getSuggestions;
+
+      document.getElementById('t.recsTitle').textContent = t.recsTitle;
+      document.getElementById('resultsBack').textContent = t.backToMenu;
+      document.getElementById('logoutBtn').textContent = t.logout;
+      document.getElementById('t.footerNote').textContent = t.footerNote;
+
+      // rebuild quiz if it's visible
+      if(screens.quiz.classList.contains('active')){
+        buildQuiz();
+      }
+    }
+
+    /* ---------------- Registration ---------------- */
+    const btnContinue = document.getElementById('btnContinue');
+    btnContinue.addEventListener('click', ()=>{
+      const name = document.getElementById('inpName').value.trim();
+      const email = document.getElementById('inpEmail').value.trim();
+      const age = document.getElementById('inpAge').value.trim();
+      const gender = document.getElementById('inpGender').value;
+
+      if(!name || !email){
+        alert(LANG==='es' ? 'Ingresa nombre y correo.' : LANG==='zh' ? '请输入姓名与电子邮件。' : 'Please enter name and email.');
+        return;
+      }
+      const user = {name,email,age,gender};
+      localStorage.setItem('ndin_user', JSON.stringify(user));
+      document.getElementById('userPreview').textContent = name.split(' ')[0];
+      showScreen('home');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      localStorage.removeItem('ndin_user');
+      showScreen('register');
+    });
+
+    // Restore user if exists
+    const saved = JSON.parse(localStorage.getItem('ndin_user')||'null');
+    if(saved && saved.name){
+      document.getElementById('userPreview').textContent = saved.name.split(' ')[0];
+      // showScreen('home'); // si quieres arrancar directo en home, descomenta
+    }
+
+    /* ---------------- Navigation ---------------- */
+    document.getElementById('openQuiz').addEventListener('click', ()=>{
+      buildQuiz();
+      showScreen('quiz');
+    });
+    document.getElementById('quizBack').addEventListener('click', ()=> showScreen('home'));
+    document.getElementById('resultsBack').addEventListener('click', ()=> showScreen('home'));
+
+    /* ---------------- Quiz Build & Logic ---------------- */
+    const quizForm = document.getElementById('quizForm');
+    function buildQuiz(){
+      quizForm.innerHTML = '';
+      const items = I18N[LANG].Q;
+      items.forEach((it, idx)=>{
+        const qDiv = document.createElement('div');
+        qDiv.className = 'q';
+        const h = document.createElement('h4');
+        h.textContent = (idx+1)+'. '+it.q;
+        qDiv.appendChild(h);
+
+        const optGrid = document.createElement('div');
+        optGrid.className = 'opt-grid';
+
+        it.o.forEach((label, i)=>{
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'opt';
+          btn.textContent = label;
+          btn.dataset.q = idx;
+          btn.dataset.val = i; // índice para scoring
+          btn.addEventListener('click', ()=>{
+            // deseleccionar hermanos
+            optGrid.querySelectorAll('.opt').forEach(el=> el.classList.remove('selected'));
+            btn.classList.add('selected');
+          });
+          optGrid.appendChild(btn);
+        });
+
+        qDiv.appendChild(optGrid);
+        quizForm.appendChild(qDiv);
+      });
+    }
+
+    document.getElementById('quizSubmit').addEventListener('click', ()=>{
+      const selected = quizForm.querySelectorAll('.opt.selected');
+      const totalQs = I18N[LANG].Q.length;
+      if(selected.length < totalQs){
+        alert(I18N[LANG].needAll);
+        return;
+      }
+      const answers = [];
+      let totalScore = 0;
+      selected.forEach(s=>{
+        const qidx = Number(s.dataset.q);
+        const val = Number(s.dataset.val); // 0 mejor → 3 peor (depende de la pregunta)
+        answers[qidx] = val;
+        totalScore += val;
+      });
+
+      // Build recommendations
+      const T = I18N[LANG];
+      const recs = new Set();
+
+      // Map de preguntas para triggers (usamos índices de respuestas altas como señales)
+      // 0 mood (>=2)
+      if(answers[0] >= 2) recs.add(T.rec_mood);
+      // 1 sleep (>=2)
+      if(answers[1] >= 2) recs.add(T.rec_sleep);
+      // 2 focus (>=2)
+      if(answers[2] >= 2) recs.add(T.rec_focus);
+      // 3 support (>=2) o 8 support
+      if(answers[3] >= 2 || answers[8] >= 2) recs.add(T.rec_support);
+      // 4 anhedonia (>=2)
+      if(answers[4] >= 2) recs.add(T.rec_interest);
+      // 5 stress (>=2)
+      if(answers[5] >= 2) recs.add(T.rec_focus);
+      // 6 anxiety (>=2)
+      if(answers[6] >= 2) recs.add(T.rec_anxiety);
+      // 7 coping (>=2) añadir rec_coping
+      if(answers[7] >= 2) recs.add(T.rec_coping);
+      // 9 hope (>=2)
+      if(answers[9] >= 2) recs.add(T.rec_hope);
+
+      // Severidad (umbral por promedio)
+      const avg = totalScore / totalQs; // entre ~0 y 3
+      if(avg >= 2.2) recs.add(T.rec_severity_high);
+      else if(avg >= 1.4) recs.add(T.rec_severity_med);
+      else recs.add(T.rec_severity_low);
+
+      // Mostrar
+      const list = document.getElementById('recsList');
+      list.innerHTML = '';
+      Array.from(recs).forEach(r=>{
+        const li = document.createElement('li'); li.textContent = r; list.appendChild(li);
+      });
+
+      showScreen('results');
+    });
+
+    /* ---------------- Countdown (disabled chat tile) ---------------- */
+    const countdownEl = document.getElementById('countdown');
+    const target = new Date('December 31, 2099 23:59:59').getTime();
+    function tick(){
+      const now = Date.now();
+      let diff = Math.max(0, target - now);
+
+      const T = I18N[LANG].units;
+      const yearMs = 1000*60*60*24*365;
+      const weekMs = 1000*60*60*24*7;
+      const dayMs  = 1000*60*60*24;
+      const hourMs = 1000*60*60;
+      const minMs  = 1000*60;
+
+      const years = Math.floor(diff/yearMs); diff %= yearMs;
+      const weeks = Math.floor(diff/weekMs); diff %= weekMs;
+      const days  = Math.floor(diff/dayMs);  diff %= dayMs;
+      const hours = Math.floor(diff/hourMs); diff %= hourMs;
+      const mins  = Math.floor(diff/minMs);  diff %= minMs;
+      const secs  = Math.floor(diff/1000);
+
+      countdownEl.textContent = `${years}${T.y} ${weeks}${T.w} ${days}${T.d} ${hours}${T.h} ${mins}${T.m} ${secs}${T.s}`;
+    }
+    setInterval(tick, 1000); tick();
+
+    /* ---------------- Init ---------------- */
+    applyLang('en'); // idioma por defecto
+  </script>
+</body>
+</html>
